@@ -38,14 +38,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody RegisterRequest request) {
-        // For now, just validate user exists
+
+        String token = authService.authenticateAndGenerateToken(request.getEmail(), request.getPassword());
         User user = authService.loginUser(request.getEmail(), request.getPassword());
 
         AuthResponse response = new AuthResponse(
-                user.getEmail(),
-                user.getRole().name(),
+                request.getEmail(),
+                "USER", // We'll get actual role from token later
                 "Login successful"
         );
+        response.setToken(token);
         // We'll add JWT token in the next step
 
         return ResponseEntity.ok(response);
