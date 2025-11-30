@@ -22,6 +22,19 @@ eureka:
   client:
     enabled: false
 
+
+car:
+  scoring:
+    weights:
+      usage: 0.4
+      recency: 0.3
+      price: 0.3
+    price:
+      thresholds:
+        low: 30     # Excellent score
+        medium: 60  # Good score
+        high: 100   # Average score
+
 logging:
   level:
     com.carmanagement.car: DEBUG

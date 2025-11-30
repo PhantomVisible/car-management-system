@@ -3,21 +3,37 @@ package com.carmanagement.car.application.services;
 import com.carmanagement.car.domain.ports.CarSearchPort;
 import com.carmanagement.car.domain.models.Car;
 import com.carmanagement.car.domain.ports.CarRepositoryPort;
+import com.carmanagement.car.domain.services.CarScoringService;
 import com.carmanagement.car.shared.exceptions.CarNotFoundException;
 import com.carmanagement.car.shared.exceptions.CarNotAvailableException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CarService {
     private final CarRepositoryPort carRepository;
     private final CarSearchPort carSearchPort;
+    private final CarScoringService carScoringService;
 
-    public CarService(CarRepositoryPort carRepository, CarSearchPort carSearchPort) {
+    public CarService(CarRepositoryPort carRepository, CarSearchPort carSearchPort, CarScoringService carScoringService) {
         this.carRepository = carRepository;
         this.carSearchPort = carSearchPort;
+        this.carScoringService = carScoringService;
+    }
+
+    public List<Car> getRecommendedCars() {
+        List<Car> availableCars = carRepository.findByAvailableTrue();
+
+        // Score and sort cars
+        return availableCars.stream()
+                .sorted((c1, c2) -> Double.compare(
+                        carScoringService.calculateCarScore(c2), // Descending order
+                        carScoringService.calculateCarScore(c1)
+                ))
+                .collect(Collectors.toList());
     }
 
     public Car addCar(Car car) {

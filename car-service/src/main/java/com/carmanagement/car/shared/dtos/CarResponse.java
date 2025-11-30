@@ -14,11 +14,14 @@ public class CarResponse {
     private Integer usageCount;
     private LocalDateTime createdAt;
 
+    private Double score;           // 0.0 to 1.0
+    private String scoreCategory;   // EXCELLENT, GOOD, etc.
+
     // Constructors
     public CarResponse() {}
 
     public CarResponse(Long carId, String brand, String model, Integer year, String owner,
-                       Boolean available, BigDecimal dailyPrice, Integer usageCount, LocalDateTime createdAt) {
+                       Boolean available, BigDecimal dailyPrice, Integer usageCount, LocalDateTime createdAt, Double score, String scoreCategory) {
         this.carId = carId;
         this.brand = brand;
         this.model = model;
@@ -28,6 +31,9 @@ public class CarResponse {
         this.dailyPrice = dailyPrice;
         this.usageCount = usageCount;
         this.createdAt = createdAt;
+
+        this.score = score;
+        this.scoreCategory = scoreCategory;
     }
 
     // Getters and Setters
@@ -49,4 +55,9 @@ public class CarResponse {
     public void setUsageCount(Integer usageCount) { this.usageCount = usageCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public Double getScore() { return score; }
+    public void setScore(Double score) { this.score = score; }
+    public String getScoreCategory() { return scoreCategory; }
+    public void setScoreCategory(String scoreCategory) { this.scoreCategory = scoreCategory; }
 }

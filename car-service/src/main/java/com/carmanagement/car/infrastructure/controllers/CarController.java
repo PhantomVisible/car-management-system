@@ -2,8 +2,11 @@ package com.carmanagement.car.infrastructure.controllers;
 
 import com.carmanagement.car.application.services.CarService;
 import com.carmanagement.car.domain.models.Car;
+import com.carmanagement.car.domain.services.CarScoringService;
+import com.carmanagement.car.domain.services.CarStatisticsService;
 import com.carmanagement.car.shared.dtos.CarRequest;
 import com.carmanagement.car.shared.dtos.CarResponse;
+import com.carmanagement.car.shared.dtos.CarStatistics;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +19,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/cars")
 public class CarController {
     private final CarService carService;
+    private final CarScoringService carScoringService;
+    private final CarStatisticsService carStatisticsService;
 
-    public CarController(CarService carService) {
+    public CarController(CarService carService, CarScoringService carScoringService, CarStatisticsService carStatisticsService) {
         this.carService = carService;
+        this.carScoringService = carScoringService;
+        this.carStatisticsService = carStatisticsService;
     }
 
     @PostMapping
@@ -51,6 +58,14 @@ public class CarController {
         return ResponseEntity.ok(cars);
     }
 
+    @GetMapping("/recommended")
+    public ResponseEntity<List<CarResponse>> getRecommendedCars() {
+        List<CarResponse> cars = carService.getRecommendedCars().stream()
+                .map(this::toCarResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(cars);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<CarResponse>> searchCars(
             @RequestParam(required = false) String brand,
@@ -64,6 +79,12 @@ public class CarController {
                 .map(this::toCarResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(cars);
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<CarStatistics> getCarStatistics() {
+        CarStatistics statistics = carStatisticsService.calculateStatistics();
+        return ResponseEntity.ok(statistics);
     }
 
     @GetMapping("/{carId}")
@@ -97,6 +118,9 @@ public class CarController {
 
     // Helper method to convert Car entity to CarResponse DTO
     private CarResponse toCarResponse(Car car) {
+        double score = carScoringService.calculateCarScore(car);
+        String scoreCategory = carScoringService.getScoreCategory(score);
+
         return new CarResponse(
                 car.getCarId(),
                 car.getBrand(),
@@ -106,7 +130,9 @@ public class CarController {
                 car.getAvailable(),
                 car.getDailyPrice(),
                 car.getUsageCount(),
-                car.getCreatedAt()
+                car.getCreatedAt(),
+                score,
+                scoreCategory
         );
     }
 }
