@@ -34,4 +34,3 @@ logging:
 
 jwt:
   secret: "mySuperSecretKeyForJWTTokenGenerationInCarManagementSystem2024"
-  expiration: 86400000

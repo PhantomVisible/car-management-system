@@ -61,4 +61,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(CarCurrentlyRentedException.class)
+    public ResponseEntity<Map<String, Object>> handleCarCurrentlyRented(CarCurrentlyRentedException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("errorCode", ex.getErrorCode());
+        body.put("message", ex.getMessage());
+        body.put("status", HttpStatus.CONFLICT.value());
+
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
 }

@@ -2,14 +2,15 @@ package com.carmanagement.car.infrastructure.controllers;
 
 import com.carmanagement.car.application.services.CarService;
 import com.carmanagement.car.domain.models.Car;
-import com.carmanagement.car.domain.services.CarScoringService;
-import com.carmanagement.car.domain.services.CarStatisticsService;
+import com.carmanagement.car.application.services.CarScoringService;
+import com.carmanagement.car.application.services.CarStatisticsService;
 import com.carmanagement.car.shared.dtos.CarRequest;
 import com.carmanagement.car.shared.dtos.CarResponse;
 import com.carmanagement.car.shared.dtos.CarStatistics;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/cars")
 public class CarController {
+
     private final CarService carService;
     private final CarScoringService carScoringService;
     private final CarStatisticsService carStatisticsService;
@@ -29,6 +31,7 @@ public class CarController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CarResponse> addCar(@Valid @RequestBody CarRequest carRequest) {
         Car car = new Car(
                 carRequest.getBrand(),
@@ -94,6 +97,7 @@ public class CarController {
     }
 
     @PutMapping("/{carId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CarResponse> updateCar(
             @PathVariable Long carId,
             @Valid @RequestBody CarRequest carRequest) {
@@ -111,6 +115,7 @@ public class CarController {
     }
 
     @DeleteMapping("/{carId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCar(@PathVariable Long carId) {
         carService.deleteCar(carId);
         return ResponseEntity.noContent().build();

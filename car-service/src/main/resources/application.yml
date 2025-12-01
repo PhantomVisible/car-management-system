@@ -39,3 +39,6 @@ logging:
   level:
     com.carmanagement.car: DEBUG
     org.hibernate.SQL: DEBUG
+
+jwt:
+  secret: "mySuperSecretKeyForJWTTokenGenerationInCarManagementSystem2024"

@@ -3,7 +3,7 @@ package com.carmanagement.car.application.services;
 import com.carmanagement.car.domain.ports.CarSearchPort;
 import com.carmanagement.car.domain.models.Car;
 import com.carmanagement.car.domain.ports.CarRepositoryPort;
-import com.carmanagement.car.domain.services.CarScoringService;
+import com.carmanagement.car.shared.exceptions.CarCurrentlyRentedException;
 import com.carmanagement.car.shared.exceptions.CarNotFoundException;
 import com.carmanagement.car.shared.exceptions.CarNotAvailableException;
 import org.springframework.stereotype.Service;
@@ -56,8 +56,10 @@ public class CarService {
     }
 
     public void deleteCar(Long carId) {
-        if (!carRepository.existsById(carId)) {
-            throw new CarNotFoundException(carId);
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new CarNotFoundException(carId));
+        if (!car.getAvailable()) {
+            throw new CarCurrentlyRentedException(carId);
         }
         carRepository.deleteById(carId);
     }
