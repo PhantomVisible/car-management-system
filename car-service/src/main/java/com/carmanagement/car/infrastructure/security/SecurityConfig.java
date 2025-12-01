@@ -1,5 +1,6 @@
 package com.carmanagement.car.infrastructure.security;
 
+import jakarta.ws.rs.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -30,14 +31,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authz -> authz
-                        // Public endpoints
-                        .requestMatchers("/api/cars",
-                                "/api/cars/available",
-                                "/api/cars/search",
-                                "/api/cars/recommended",
-                                "/api/cars/statistics").permitAll()
-                        .requestMatchers("/api/cars/**").permitAll() // All other car endpoints need auth
-                        .anyRequest().authenticated()
+                        // Make ALL car endpoints require authentication
+                        .requestMatchers("/api/cars/**").authenticated()
+                        .anyRequest().permitAll() // Other endpoints are public
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(secretKey),
