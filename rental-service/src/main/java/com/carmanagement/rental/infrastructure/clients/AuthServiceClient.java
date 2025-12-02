@@ -2,6 +2,8 @@ package com.carmanagement.rental.infrastructure.clients;
 
 import com.carmanagement.rental.shared.exceptions.ServiceUnavailableException;
 import com.carmanagement.rental.shared.exceptions.UserNotFoundException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
         url = "http://localhost:8081",
         fallback = AuthServiceFallback.class
 )
+@CircuitBreaker(name = "authService")  // Add circuit breaker
+@Retry(name = "authService")           // Add retry mechanism
 public interface AuthServiceClient {
 
     @GetMapping("/api/auth/users/{userId}")

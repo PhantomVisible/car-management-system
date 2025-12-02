@@ -32,6 +32,8 @@ public class Rental {
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
+    private BigDecimal dailyPriceAtRental;
+
     private BigDecimal latePenalty;  // Calculated if returned late
 
     private LocalDateTime createdAt;
@@ -40,14 +42,20 @@ public class Rental {
     public Rental() {}
 
     public Rental(Long userId, Long carId, LocalDateTime startDate,
-                  LocalDateTime endDate, BigDecimal totalPrice) {
+                  LocalDateTime endDate, BigDecimal totalPrice, BigDecimal dailyPriceAtRental) {
         this.userId = userId;
         this.carId = carId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.totalPrice = totalPrice;
+        this.dailyPriceAtRental = dailyPriceAtRental;
         this.status = RentalStatus.PENDING;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public Rental(Long userId, Long carId, LocalDateTime startDate,
+                  LocalDateTime endDate, BigDecimal totalPrice) {
+        this(userId, carId, startDate, endDate, totalPrice, null);
     }
 
     // Business logic methods
@@ -64,6 +72,7 @@ public class Rental {
 
     // Getters and Setters
     public Long getRentalId() { return rentalId; }
+    public void setRentalId(Long rentalId) { this.rentalId = rentalId; }
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
     public Long getCarId() { return carId; }
@@ -78,6 +87,8 @@ public class Rental {
     public void setStatus(RentalStatus status) { this.status = status; }
     public BigDecimal getTotalPrice() { return totalPrice; }
     public void setTotalPrice(BigDecimal totalPrice) { this.totalPrice = totalPrice; }
+    public BigDecimal getDailyPriceAtRental() { return dailyPriceAtRental; }
+    public void setDailyPriceAtRental(BigDecimal dailyPriceAtRental) { this.dailyPriceAtRental = dailyPriceAtRental; }
     public BigDecimal getLatePenalty() { return latePenalty; }
     public void setLatePenalty(BigDecimal latePenalty) { this.latePenalty = latePenalty; }
     public LocalDateTime getCreatedAt() { return createdAt; }

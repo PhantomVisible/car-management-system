@@ -1,6 +1,8 @@
 spring:
   application:
     name: rental-service
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     url: jdbc:postgresql://localhost:5432/carmanagement_rental
     username: postgres
@@ -18,15 +20,6 @@ spring:
 server:
   port: 8083
 
-# Feign client configuration (for calling other services)
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 5000
-        readTimeout: 5000
-        loggerLevel: basic
-
 eureka:
   client:
     enabled: false
@@ -37,8 +30,9 @@ jwt:
 # Rental Service specific configuration
 rental:
   penalties:
-    daily-late-fee-percentage: 10  # 10% of daily price per day late
-    grace-period-hours: 2          # 2 hour grace period
+    late-fee-percentage: 10    # 10% of daily price per day late
+    max-penalty-percentage: 50 # Maximum penalty is 50% of rental price
+    grace-period-hours: 2      # 2 hour grace period before penalties apply
 
   pricing:
     base-multiplier: 1.0
@@ -49,3 +43,42 @@ logging:
     com.carmanagement.rental: DEBUG
     org.hibernate.SQL: DEBUG
     feign: DEBUG  # To see Feign client calls
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authService:
+        slidingWindowSize: 10  # Last 10 calls
+        minimumNumberOfCalls: 5  # Need 5 calls before deciding
+        failureRateThreshold: 50  # 50% failures → OPEN circuit
+        waitDurationInOpenState: 5s  # Wait 5s before trying again
+        permittedNumberOfCallsInHalfOpenState: 3  # Try 3 calls in HALF_OPEN
+
+      carService:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+
+  # Also add retry configuration
+  retry:
+    instances:
+      authService:
+        maxAttempts: 3  # Try 3 times before giving up
+        waitDuration: 1s  # Wait 1s between retries
+
+      carService:
+        maxAttempts: 3
+        waitDuration: 1s
+
+# Feign client with circuit breaker
+feign:
+  circuitbreaker:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 3000  # 3 seconds
+        readTimeout: 5000     # 5 seconds
+        loggerLevel: basic

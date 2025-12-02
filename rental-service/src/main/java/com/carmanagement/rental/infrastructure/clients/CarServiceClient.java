@@ -1,5 +1,7 @@
 package com.carmanagement.rental.infrastructure.clients;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +12,8 @@ import java.math.BigDecimal;
         url = "http://localhost:8082",
         fallback = CarServiceFallback.class
 )
+@CircuitBreaker(name = "carService")  // Add circuit breaker
+@Retry(name = "carService")           // Add retry mechanism
 public interface CarServiceClient {
 
     @GetMapping("/api/cars/{carId}")
