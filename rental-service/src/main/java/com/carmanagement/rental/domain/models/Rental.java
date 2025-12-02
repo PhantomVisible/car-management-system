@@ -32,9 +32,11 @@ public class Rental {
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
+    @Column(name = "daily_price_at_rental", precision = 10, scale = 2)
     private BigDecimal dailyPriceAtRental;
 
-    private BigDecimal latePenalty;  // Calculated if returned late
+    @Column(name = "late_penalty", precision = 10, scale = 2)
+    private BigDecimal latePenalty;
 
     private LocalDateTime createdAt;
 

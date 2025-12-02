@@ -65,18 +65,23 @@ public class RentalService {
         // 2. Validate car exists and is available
         validateCarAvailability(carId, startDate, endDate, authToken);
 
-        // 3. Get current daily price AND calculate total price
-        BigDecimal dailyPrice = getCarPrice(carId, authToken);  // Get current price
-        BigDecimal totalPrice = calculatePrice(dailyPrice, startDate, endDate);
+        // 3. Get current daily price from Car Service
+        BigDecimal dailyPrice = getCarPrice(carId, authToken);
 
-        // 4. Create rental WITH daily price stored
-        Rental rental = new Rental(userId, carId, startDate, endDate, totalPrice, dailyPrice);
+        // 4. Calculate total rental price
+        long rentalDays = Duration.between(startDate, endDate).toDays();
+        if (rentalDays < 1) rentalDays = 1; // Minimum 1 day
+        BigDecimal totalPrice = dailyPrice.multiply(BigDecimal.valueOf(rentalDays));
+
+        // 5. Create rental WITH historical price stored
+        Rental rental = new Rental(userId, carId, startDate, endDate,
+                totalPrice, dailyPrice);
         rental.setStatus(RentalStatus.CONFIRMED);
 
-        // 5. Mark car as rented
+        // 6. Mark car as rented in Car Service
         markCarAsRented(carId, authToken);
 
-        // 6. Save rental
+        // 7. Save rental to database
         return rentalRepository.save(rental);
     }
 
@@ -127,7 +132,7 @@ public class RentalService {
     }
 
     private BigDecimal calculateLatePenalty(Rental rental, LocalDateTime actualReturnDate, String authToken) {
-        // Calculate days late (considering grace period)
+
         LocalDateTime dueDateWithGrace = rental.getEndDate().plusHours(gracePeriodHours);
         long hoursLate = Duration.between(dueDateWithGrace, actualReturnDate).toHours();
         long daysLate = (hoursLate + 23) / 24;
@@ -140,7 +145,7 @@ public class RentalService {
         if (dailyPrice == null) {
             // Fallback: get current price if not stored (for old rentals)
             logger.warn("Daily price not stored for rental {}, fetching current price", rental.getRentalId());
-            dailyPrice = getCarPrice(rental.getCarId(), authToken);
+            throw new IllegalStateException("Daily price not stored for rental");
         }
 
         // Calculate daily penalty
@@ -151,9 +156,10 @@ public class RentalService {
         BigDecimal totalPenalty = dailyPenalty.multiply(BigDecimal.valueOf(daysLate));
 
         // Apply maximum penalty cap
-        BigDecimal maxAllowed = dailyPrice.multiply(BigDecimal.valueOf(maxPenaltyPercentage / 100.0));
+        BigDecimal maxPenalty = dailyPrice.multiply(
+                BigDecimal.valueOf(maxPenaltyPercentage / 100.0));
 
-        return totalPenalty.min(maxAllowed); // Return the smaller of the two
+        return totalPenalty.min(maxPenalty);
     }
 
     private BigDecimal getCarPrice(Long carId, String authToken) {
@@ -220,8 +226,11 @@ public class RentalService {
     public Rental createRentalFallback(Long userId, Long carId,
                                        LocalDateTime startDate, LocalDateTime endDate,
                                        String authToken, Exception e) {
-        logger.error("Fallback triggered for rental creation. Error: {}", e.getMessage());
-        throw new RuntimeException("Unable to create rental at this time. Please try again later.");
+        logger.warn("Circuit breaker fallback triggered for rental creation. " +
+                "User: {}, Car: {}. Error: {}", userId, carId, e.getMessage());
+
+        // Instead of throwing RuntimeException, throw our custom exception
+        throw new ServiceUnavailableException("Rental Service", "create a new rental at this time");
     }
 
     public List<Rental> getUserRentals(Long userId) {
