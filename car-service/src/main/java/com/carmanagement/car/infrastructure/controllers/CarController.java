@@ -121,6 +121,20 @@ public class CarController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{carId}/rent")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<CarResponse> markCarAsRented(@PathVariable Long carId) {
+        Car rentedCar = carService.markAsRented(carId);
+        return ResponseEntity.ok(toCarResponse(rentedCar));
+    }
+
+    @PutMapping("/api/cars/{carId}/available")
+    public ResponseEntity<CarResponse> markCarAsAvailable(@PathVariable Long carId) {
+        Car car = carService.markCarAsAvailable(carId);
+        return ResponseEntity.ok(toCarResponse(car));
+    }
+
+
     // Helper method to convert Car entity to CarResponse DTO
     private CarResponse toCarResponse(Car car) {
         double score = carScoringService.calculateCarScore(car);
@@ -141,10 +155,6 @@ public class CarController {
         );
     }
 
-    @PutMapping("/{carId}/rent")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<CarResponse> markCarAsRented(@PathVariable Long carId) {
-        Car rentedCar = carService.markAsRented(carId);
-        return ResponseEntity.ok(toCarResponse(rentedCar));
-    }
+
+
 }

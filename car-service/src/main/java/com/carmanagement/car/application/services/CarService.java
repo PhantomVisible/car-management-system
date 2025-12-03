@@ -91,8 +91,9 @@ public class CarService {
         return carRepository.save(car);
     }
 
-    public Car markAsAvailable(Long carId) {
-        Car car = getCarById(carId);
+    public Car markCarAsAvailable(Long carId) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new CarNotFoundException(carId));
         car.setAvailable(true);
         return carRepository.save(car);
     }

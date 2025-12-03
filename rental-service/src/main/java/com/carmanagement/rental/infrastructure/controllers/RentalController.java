@@ -2,6 +2,7 @@ package com.carmanagement.rental.infrastructure.controllers;
 
 import com.carmanagement.rental.application.services.RentalService;
 import com.carmanagement.rental.domain.models.Rental;
+import com.carmanagement.rental.infrastructure.clients.CarServiceClient;
 import com.carmanagement.rental.infrastructure.security.JwtUtil;
 import com.carmanagement.rental.shared.dtos.RentalRequest;
 import com.carmanagement.rental.shared.dtos.RentalResponse;
@@ -78,12 +79,12 @@ public class RentalController {
     }
 
     @PutMapping("/{rentalId}/return")
-    public ResponseEntity<RentalResponse> returnCar(
+    public ResponseEntity<RentalResponse> returnRental(
             @PathVariable Long rentalId,
             @RequestHeader("Authorization") String authHeader) {
 
         Long userId = extractUserIdFromToken(authHeader);
-        Rental returnedRental = rentalService.returnCar(rentalId, userId, authHeader);
+        Rental returnedRental = rentalService.returnRental(rentalId, userId, authHeader);
         return ResponseEntity.ok(toRentalResponse(returnedRental));
     }
     // Helper method to extract userId from JWT token
@@ -119,7 +120,17 @@ public class RentalController {
         return ResponseEntity.ok(toRentalResponse(rental));
     }
 
-        // Convert Rental entity to RentalResponse DTO
+    @GetMapping("/cars/{carId}/availability")
+    public ResponseEntity<CarServiceClient.AvailabilityResponse> checkCarAvailability(
+            @PathVariable Long carId,
+            @RequestHeader("Authorization") String authHeader) {
+
+        return ResponseEntity.ok(rentalService.checkCarAvailability(carId, authHeader));
+    }
+
+
+
+    // Convert Rental entity to RentalResponse DTO
     private RentalResponse toRentalResponse(Rental rental) {
         return new RentalResponse(
                 rental.getRentalId(),

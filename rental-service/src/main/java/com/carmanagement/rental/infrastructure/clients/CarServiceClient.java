@@ -40,6 +40,13 @@ public interface CarServiceClient {
             @RequestHeader("Authorization") String token
     );
 
+    @PutMapping("/api/cars/{carId}/available")
+    CarResponse markAsAvailableAfterCancel(
+            @PathVariable("carId") Long carId,
+            @RequestHeader("Authorization") String token
+    );
+
+
     // Inner classes for responses
     class CarResponse {
         private Long carId;

@@ -101,7 +101,7 @@ public class RentalService {
         }
 
         rental.setStatus(RentalStatus.CANCELLED);
-        carServiceClient.markAsAvailable(rental.getCarId(), authToken);
+        carServiceClient.markAsAvailableAfterCancel(rental.getCarId(), authToken);
 
         return rentalRepository.save(rental);
     }
@@ -147,6 +147,21 @@ public class RentalService {
         if (daysLate < 1) daysLate = 1;
         return dailyPenaltyRate.multiply(BigDecimal.valueOf(daysLate));
     }
+    public CarServiceClient.AvailabilityResponse checkCarAvailability(Long carId, String token) {
+        return carServiceClient.checkAvailability(carId, token);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<Rental> getUserRentals(Long userId) {
+        return rentalRepository.findByUserId(userId);
+    }
+    @Transactional(readOnly = true)
+    public Rental getRentalById(Long rentalId) {
+        return rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new RentalNotFoundException(rentalId));
+    }
+
 
     // ---------------------------
     // FALLBACK

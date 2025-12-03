@@ -79,7 +79,7 @@ public class HealthController {
         info.put("endpoints", Map.of(
                 "createRental", "POST /api/rentals",
                 "getMyRentals", "GET /api/rentals/my-rentals",
-                "returnCar", "PUT /api/rentals/{id}/return",
+                "returnRental", "PUT /api/rentals/{id}/return",
                 "health", "GET /api/health"
         ));
 
