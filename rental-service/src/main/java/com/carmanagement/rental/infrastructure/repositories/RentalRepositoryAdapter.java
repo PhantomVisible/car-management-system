@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -28,6 +28,6 @@ public interface RentalRepositoryAdapter extends JpaRepository<Rental, Long>, Re
             "(r.startDate <= :startDate AND r.endDate >= :endDate))")
     List<Rental> findOverlappingRentals(
             @Param("carId") Long carId,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate);
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }

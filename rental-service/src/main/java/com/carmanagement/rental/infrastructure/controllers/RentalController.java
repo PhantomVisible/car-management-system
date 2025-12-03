@@ -110,8 +110,16 @@ public class RentalController {
 
         throw new RuntimeException("User not recognized from token");
     }
+    @PutMapping("/{rentalId}/cancel")
+    public ResponseEntity<RentalResponse> cancelRental(
+            @PathVariable Long rentalId,
+            @RequestHeader("Authorization") String token) {
 
-    // Convert Rental entity to RentalResponse DTO
+        Rental rental = rentalService.cancelRental(rentalId, token);
+        return ResponseEntity.ok(toRentalResponse(rental));
+    }
+
+        // Convert Rental entity to RentalResponse DTO
     private RentalResponse toRentalResponse(Rental rental) {
         return new RentalResponse(
                 rental.getRentalId(),

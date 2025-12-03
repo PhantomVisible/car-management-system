@@ -47,7 +47,7 @@ public class AuthService {
 
     public String authenticateAndGenerateToken(String email, String password) {
         User user = loginUser(email, password); // Reuse existing logic
-        return jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        return jwtUtil.generateToken(user.getUserId(), user.getEmail(), user.getRole().name());
     }
 
     public User findUserById(Long userId) {

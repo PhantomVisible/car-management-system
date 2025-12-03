@@ -2,7 +2,7 @@ package com.carmanagement.car.domain.models;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "cars")
@@ -29,7 +29,7 @@ public class Car {
 
     private Integer usageCount = 0;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     // Constructors
     public Car() {}
@@ -41,7 +41,7 @@ public class Car {
         this.owner = owner;
         this.dailyPrice = dailyPrice;
         this.available = true;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
         this.usageCount = 0;
     }
 
@@ -61,5 +61,5 @@ public class Car {
     public void setDailyPrice(BigDecimal dailyPrice) { this.dailyPrice = dailyPrice; }
     public Integer getUsageCount() { return usageCount; }
     public void setUsageCount(Integer usageCount) { this.usageCount = usageCount; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDate getCreatedAt() { return createdAt; }
 }

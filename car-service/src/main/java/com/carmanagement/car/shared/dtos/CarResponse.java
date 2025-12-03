@@ -1,7 +1,7 @@
 package com.carmanagement.car.shared.dtos;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class CarResponse {
     private Long carId;
@@ -12,7 +12,7 @@ public class CarResponse {
     private Boolean available;
     private BigDecimal dailyPrice;
     private Integer usageCount;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     private Double score;           // 0.0 to 1.0
     private String scoreCategory;   // EXCELLENT, GOOD, etc.
@@ -21,7 +21,7 @@ public class CarResponse {
     public CarResponse() {}
 
     public CarResponse(Long carId, String brand, String model, Integer year, String owner,
-                       Boolean available, BigDecimal dailyPrice, Integer usageCount, LocalDateTime createdAt, Double score, String scoreCategory) {
+                       Boolean available, BigDecimal dailyPrice, Integer usageCount, LocalDate createdAt, Double score, String scoreCategory) {
         this.carId = carId;
         this.brand = brand;
         this.model = model;
@@ -53,8 +53,8 @@ public class CarResponse {
     public void setDailyPrice(BigDecimal dailyPrice) { this.dailyPrice = dailyPrice; }
     public Integer getUsageCount() { return usageCount; }
     public void setUsageCount(Integer usageCount) { this.usageCount = usageCount; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDate getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
 
     public Double getScore() { return score; }
     public void setScore(Double score) { this.score = score; }

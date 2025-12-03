@@ -1,7 +1,7 @@
 package com.carmanagement.auth.domain.models;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
@@ -20,7 +20,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     private boolean isActive = true;  // For soft delete!
 
@@ -31,7 +31,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
         this.isActive = true;
     }
 
@@ -43,7 +43,7 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDate getCreatedAt() { return createdAt; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 }

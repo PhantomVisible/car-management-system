@@ -3,28 +3,28 @@ package com.carmanagement.rental.shared.dtos;
 import com.carmanagement.rental.domain.models.RentalStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class RentalResponse {
 
     private Long rentalId;
     private Long userId;
     private Long carId;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private LocalDateTime actualReturnDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDate actualReturnDate;
     private RentalStatus status;
     private BigDecimal totalPrice;
     private BigDecimal latePenalty;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     // Constructors
     public RentalResponse() {}
 
-    public RentalResponse(Long rentalId, Long userId, Long carId, LocalDateTime startDate,
-                          LocalDateTime endDate, LocalDateTime actualReturnDate,
+    public RentalResponse(Long rentalId, Long userId, Long carId, LocalDate startDate,
+                          LocalDate endDate, LocalDate actualReturnDate,
                           RentalStatus status, BigDecimal totalPrice, BigDecimal latePenalty,
-                          LocalDateTime createdAt) {
+                          LocalDate createdAt) {
         this.rentalId = rentalId;
         this.userId = userId;
         this.carId = carId;
@@ -47,14 +47,14 @@ public class RentalResponse {
     public Long getCarId() { return carId; }
     public void setCarId(Long carId) { this.carId = carId; }
 
-    public LocalDateTime getStartDate() { return startDate; }
-    public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public LocalDateTime getEndDate() { return endDate; }
-    public void setEndDate(LocalDateTime endDate) { this.endDate = endDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public LocalDateTime getActualReturnDate() { return actualReturnDate; }
-    public void setActualReturnDate(LocalDateTime actualReturnDate) { this.actualReturnDate = actualReturnDate; }
+    public LocalDate getActualReturnDate() { return actualReturnDate; }
+    public void setActualReturnDate(LocalDate actualReturnDate) { this.actualReturnDate = actualReturnDate; }
 
     public RentalStatus getStatus() { return status; }
     public void setStatus(RentalStatus status) { this.status = status; }
@@ -65,6 +65,6 @@ public class RentalResponse {
     public BigDecimal getLatePenalty() { return latePenalty; }
     public void setLatePenalty(BigDecimal latePenalty) { this.latePenalty = latePenalty; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDate getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
 }

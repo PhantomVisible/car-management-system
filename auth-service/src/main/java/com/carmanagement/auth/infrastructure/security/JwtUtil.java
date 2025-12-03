@@ -12,19 +12,20 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:mySecretKey}")  // Default secret for development
+    @Value("${jwt.secret:mySecretKey}")
     private String secret;
 
-    @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds
+    @Value("${jwt.expiration:86400000}") // 24h
     private long expiration;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String email, String role) {
+    public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
                 .subject(email)
+                .claim("userId", userId)
                 .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -40,20 +41,15 @@ public class JwtUtil {
                 .getPayload();
     }
 
+    public Long extractUserId(String token) {
+        return extractClaims(token).get("userId", Long.class);
+    }
+
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
     public String extractRole(String token) {
         return extractClaims(token).get("role", String.class);
-    }
-
-    public boolean isTokenValid(String token) {
-        try {
-            extractClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 }

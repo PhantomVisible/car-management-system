@@ -4,7 +4,7 @@ public class AuthResponse {
     private String email;
     private String role;
     private String message;
-    private String token; // We'll add this later with JWT
+    private String token;
 
     // Constructors
     public AuthResponse() {}

@@ -6,7 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(GlobalException.class)
     public ResponseEntity<Map<String, Object>> handleGlobalException(GlobalException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
+        body.put("timestamp", LocalDate.now());
         body.put("errorCode", ex.getErrorCode());
         body.put("message", ex.getMessage());
         body.put("status", HttpStatus.BAD_REQUEST.value());
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CarNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleCarNotFound(CarNotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
+        body.put("timestamp", LocalDate.now());
         body.put("errorCode", ex.getErrorCode());
         body.put("message", ex.getMessage());
         body.put("status", HttpStatus.NOT_FOUND.value());
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CarNotAvailableException.class)
     public ResponseEntity<Map<String, Object>> handleCarNotAvailable(CarNotAvailableException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
+        body.put("timestamp", LocalDate.now());
         body.put("errorCode", ex.getErrorCode());
         body.put("message", ex.getMessage());
         body.put("status", HttpStatus.CONFLICT.value());
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
+        body.put("timestamp", LocalDate.now());
         body.put("errorCode", "VALIDATION_001");
         body.put("message", "Validation failed");
         body.put("status", HttpStatus.BAD_REQUEST.value());
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CarCurrentlyRentedException.class)
     public ResponseEntity<Map<String, Object>> handleCarCurrentlyRented(CarCurrentlyRentedException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
+        body.put("timestamp", LocalDate.now());
         body.put("errorCode", ex.getErrorCode());
         body.put("message", ex.getMessage());
         body.put("status", HttpStatus.CONFLICT.value());

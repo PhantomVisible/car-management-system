@@ -140,4 +140,11 @@ public class CarController {
                 scoreCategory
         );
     }
+
+    @PutMapping("/{carId}/rent")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<CarResponse> markCarAsRented(@PathVariable Long carId) {
+        Car rentedCar = carService.markAsRented(carId);
+        return ResponseEntity.ok(toCarResponse(rentedCar));
+    }
 }

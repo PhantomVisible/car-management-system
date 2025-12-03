@@ -1,6 +1,8 @@
 package com.carmanagement.rental.infrastructure.controllers;
 
 import com.carmanagement.rental.infrastructure.clients.AuthServiceClient;
+import com.carmanagement.rental.shared.dtos.AuthUserResponse;
+import com.carmanagement.rental.shared.dtos.UserResponsePath;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,10 +23,10 @@ public class CircuitTestController {
     @CircuitBreaker(name = "testCircuit", fallbackMethod = "fallbackMethod")
     public String testCircuit(@RequestHeader("Authorization") String token) {
         // This will call Auth Service
-        AuthServiceClient.UserResponse user =
-                authServiceClient.getUserById(1L, token);
+        UserResponsePath user = authServiceClient.getUserById(1L, token);
         return "Success: " + user.getEmail();
     }
+
 
     // Fallback method
     public String fallbackMethod(String token, Exception e) {

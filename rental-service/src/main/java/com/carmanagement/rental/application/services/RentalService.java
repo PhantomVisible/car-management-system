@@ -6,6 +6,7 @@ import com.carmanagement.rental.domain.ports.RentalRepositoryPort;
 import com.carmanagement.rental.infrastructure.clients.AuthServiceClient;
 import com.carmanagement.rental.infrastructure.clients.CarServiceClient;
 import com.carmanagement.rental.shared.exceptions.*;
+import com.carmanagement.rental.shared.dtos.UserResponsePath;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,7 +55,7 @@ public class RentalService {
     @CircuitBreaker(name = "rentalService", fallbackMethod = "createRentalFallback")
     @Transactional
     public Rental createRental(Long userId, Long carId,
-                               LocalDateTime startDate, LocalDateTime endDate,
+                               LocalDate startDate, LocalDate endDate,
                                String authToken) {
 
         logger.info("Creating rental for user: {}, car: {}, dates: {} to {}",
@@ -69,7 +71,7 @@ public class RentalService {
         BigDecimal dailyPrice = getCarPrice(carId, authToken);
 
         // 4. Calculate total rental price
-        long rentalDays = Duration.between(startDate, endDate).toDays();
+        long rentalDays = ChronoUnit.DAYS.between(startDate, endDate);
         if (rentalDays < 1) rentalDays = 1; // Minimum 1 day
         BigDecimal totalPrice = dailyPrice.multiply(BigDecimal.valueOf(rentalDays));
 
@@ -105,11 +107,11 @@ public class RentalService {
         }
 
         // 4. Calculate late penalty if any
-        LocalDateTime actualReturnDate = LocalDateTime.now();
+        LocalDate actualReturnDate = LocalDate.now();
         rental.setActualReturnDate(actualReturnDate);
 
         // Check if within grace period
-        LocalDateTime dueDateWithGrace = rental.getEndDate().plusHours(gracePeriodHours);
+        LocalDate dueDateWithGrace = LocalDate.from(rental.getEndDate());
 
         if (actualReturnDate.isAfter(dueDateWithGrace)) {
             BigDecimal penalty = calculateLatePenalty(rental, actualReturnDate, authToken);
@@ -131,9 +133,28 @@ public class RentalService {
         return rentalRepository.save(rental);
     }
 
-    private BigDecimal calculateLatePenalty(Rental rental, LocalDateTime actualReturnDate, String authToken) {
+    @Transactional
+    public Rental cancelRental(Long rentalId, String authToken) {
+        Rental rental = rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new RentalNotFoundException(rentalId));
 
-        LocalDateTime dueDateWithGrace = rental.getEndDate().plusHours(gracePeriodHours);
+        if (rental.getStatus() != RentalStatus.CONFIRMED) {
+            throw new InvalidRentalOperationException("cancel rental",
+                    "Cannot cancel rental. Current status: " + rental.getStatus());
+        }
+
+        rental.setStatus(RentalStatus.CANCELLED);
+
+        // Mark car as available again in Car Service
+        carServiceClient.markAsAvailable(rental.getCarId(), authToken);
+
+        return rentalRepository.save(rental);
+    }
+
+
+    private BigDecimal calculateLatePenalty(Rental rental, LocalDate actualReturnDate, String authToken) {
+
+        LocalDate dueDateWithGrace = rental.getEndDate();
         long hoursLate = Duration.between(dueDateWithGrace, actualReturnDate).toHours();
         long daysLate = (hoursLate + 23) / 24;
 
@@ -173,12 +194,10 @@ public class RentalService {
 
     private void validateUser(Long userId, String authToken) {
         try {
-            AuthServiceClient.UserResponse user =
-                    authServiceClient.getUserById(userId, authToken);
+            UserResponsePath user = authServiceClient.getUserById(userId, authToken);
 
-            if (!user.isActive()) {
-                throw new InvalidRentalOperationException("create rental",
-                        "User account is not active");
+            if (user == null) {
+                throw new UserNotFoundException(userId);
             }
 
         } catch (Exception e) {
@@ -186,8 +205,9 @@ public class RentalService {
         }
     }
 
-    private void validateCarAvailability(Long carId, LocalDateTime startDate,
-                                         LocalDateTime endDate, String authToken) {
+
+    private void validateCarAvailability(Long carId, LocalDate startDate,
+                                         LocalDate endDate, String authToken) {
         // Check if car exists and is available
         CarServiceClient.CarResponse car =
                 carServiceClient.getCarById(carId, authToken);
@@ -208,7 +228,7 @@ public class RentalService {
     }
 
     private BigDecimal calculatePrice(BigDecimal dailyPrice,
-                                      LocalDateTime startDate, LocalDateTime endDate) {
+                                      LocalDate startDate, LocalDate endDate) {
         long days = Duration.between(startDate, endDate).toDays();
         if (days < 1) days = 1;
         return dailyPrice.multiply(BigDecimal.valueOf(days));
@@ -224,7 +244,7 @@ public class RentalService {
 
     // Fallback method for circuit breaker
     public Rental createRentalFallback(Long userId, Long carId,
-                                       LocalDateTime startDate, LocalDateTime endDate,
+                                       LocalDate startDate, LocalDate endDate,
                                        String authToken, Exception e) {
         logger.warn("Circuit breaker fallback triggered for rental creation. " +
                 "User: {}, Car: {}. Error: {}", userId, carId, e.getMessage());

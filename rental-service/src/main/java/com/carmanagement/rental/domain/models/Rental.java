@@ -2,7 +2,7 @@ package com.carmanagement.rental.domain.models;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "rentals")
@@ -18,12 +18,12 @@ public class Rental {
     private Long carId;           // From Car Service
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
-    private LocalDateTime actualReturnDate;  // When actually returned
+    private LocalDate actualReturnDate;  // When actually returned
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -38,13 +38,13 @@ public class Rental {
     @Column(name = "late_penalty", precision = 10, scale = 2)
     private BigDecimal latePenalty;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     // Constructors
     public Rental() {}
 
-    public Rental(Long userId, Long carId, LocalDateTime startDate,
-                  LocalDateTime endDate, BigDecimal totalPrice, BigDecimal dailyPriceAtRental) {
+    public Rental(Long userId, Long carId, LocalDate startDate,
+                  LocalDate endDate, BigDecimal totalPrice, BigDecimal dailyPriceAtRental) {
         this.userId = userId;
         this.carId = carId;
         this.startDate = startDate;
@@ -52,11 +52,11 @@ public class Rental {
         this.totalPrice = totalPrice;
         this.dailyPriceAtRental = dailyPriceAtRental;
         this.status = RentalStatus.PENDING;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
     }
 
-    public Rental(Long userId, Long carId, LocalDateTime startDate,
-                  LocalDateTime endDate, BigDecimal totalPrice) {
+    public Rental(Long userId, Long carId, LocalDate startDate,
+                  LocalDate endDate, BigDecimal totalPrice) {
         this(userId, carId, startDate, endDate, totalPrice, null);
     }
 
@@ -67,7 +67,7 @@ public class Rental {
 
     public boolean isOverdue() {
         if (actualReturnDate == null) {
-            return LocalDateTime.now().isAfter(endDate);
+            return LocalDate.now().isAfter(endDate);
         }
         return actualReturnDate.isAfter(endDate);
     }
@@ -79,12 +79,12 @@ public class Rental {
     public void setUserId(Long userId) { this.userId = userId; }
     public Long getCarId() { return carId; }
     public void setCarId(Long carId) { this.carId = carId; }
-    public LocalDateTime getStartDate() { return startDate; }
-    public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
-    public LocalDateTime getEndDate() { return endDate; }
-    public void setEndDate(LocalDateTime endDate) { this.endDate = endDate; }
-    public LocalDateTime getActualReturnDate() { return actualReturnDate; }
-    public void setActualReturnDate(LocalDateTime actualReturnDate) { this.actualReturnDate = actualReturnDate; }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public LocalDate getActualReturnDate() { return actualReturnDate; }
+    public void setActualReturnDate(LocalDate actualReturnDate) { this.actualReturnDate = actualReturnDate; }
     public RentalStatus getStatus() { return status; }
     public void setStatus(RentalStatus status) { this.status = status; }
     public BigDecimal getTotalPrice() { return totalPrice; }
@@ -93,5 +93,5 @@ public class Rental {
     public void setDailyPriceAtRental(BigDecimal dailyPriceAtRental) { this.dailyPriceAtRental = dailyPriceAtRental; }
     public BigDecimal getLatePenalty() { return latePenalty; }
     public void setLatePenalty(BigDecimal latePenalty) { this.latePenalty = latePenalty; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDate getCreatedAt() { return createdAt; }
 }

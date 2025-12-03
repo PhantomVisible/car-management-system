@@ -1,10 +1,10 @@
 package com.carmanagement.auth.infrastructure.controllers;
 
 import com.carmanagement.auth.application.services.AuthService;
-import com.carmanagement.auth.domain.models.Role;
 import com.carmanagement.auth.domain.models.User;
 import com.carmanagement.auth.shared.dtos.AuthResponse;
 import com.carmanagement.auth.shared.dtos.RegisterRequest;
+import com.carmanagement.auth.shared.dtos.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,18 +38,30 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody RegisterRequest request) {
-
+        // Authenticate and generate JWT
         String token = authService.authenticateAndGenerateToken(request.getEmail(), request.getPassword());
+
         User user = authService.loginUser(request.getEmail(), request.getPassword());
 
         AuthResponse response = new AuthResponse(
-                request.getEmail(),
-                "USER", // We'll get actual role from token later
+                user.getEmail(),
+                user.getRole().name(),
                 "Login successful"
         );
         response.setToken(token);
-        // We'll add JWT token in the next step
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<AuthUserResponse> getUserById(@PathVariable Long id) {
+        User user = authService.findUserById(id);
+        AuthUserResponse response = new AuthUserResponse(
+                user.getUserId(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+        return ResponseEntity.ok(response);
+    }
+
 }

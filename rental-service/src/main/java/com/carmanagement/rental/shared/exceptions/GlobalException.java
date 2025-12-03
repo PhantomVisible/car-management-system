@@ -1,18 +1,18 @@
 package com.carmanagement.rental.shared.exceptions;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class GlobalException extends RuntimeException {
-    private final LocalDateTime timestamp;
+    private final LocalDate timestamp;
     private final String errorCode;
 
     public GlobalException(String message, String errorCode) {
         super(message);
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDate.now();
         this.errorCode = errorCode;
     }
 
     // Getters
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public LocalDate getTimestamp() { return timestamp; }
     public String getErrorCode() { return errorCode; }
 }
