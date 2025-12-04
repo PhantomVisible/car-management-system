@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Auth Service - Public endpoints
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+
+        # Car Service - Requires authentication
+        - id: car-service
+          uri: lb://car-service
+          predicates:
+            - Path=/api/cars/**
+          filters:
+            - name: JwtAuthFilter
+
+        # Rental Service - Requires authentication
+        - id: rental-service
+          uri: lb://rental-service
+          predicates:
+            - Path=/api/rentals/**
+          filters:
+            - name: JwtAuthFilter
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  secret: "mySuperSecretKeyForJWTTokenGenerationInCarManagementSystem2024"

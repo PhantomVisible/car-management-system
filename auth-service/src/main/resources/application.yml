@@ -30,6 +30,11 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost           # Use localhost
+    prefer-ip-address: true       # Use IP address
+    ip-address: 127.0.0.1         # Explicit IP
+    instance-id: ${spring.application.name}:${server.port}
 
 logging:
   level:
