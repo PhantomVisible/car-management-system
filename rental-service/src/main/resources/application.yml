@@ -16,13 +16,25 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+  cloud:
+    compatibility-verifier:
+      enabled: false  # Helps with Spring Cloud compatibility
 
 server:
   port: 8083
 
 eureka:
   client:
-    enabled: false
+    enabled: true
+    service-url:
+      defaultZone: http://eureka-admin:admin123@localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
 
 jwt:
   secret: "mySuperSecretKeyForJWTTokenGenerationInCarManagementSystem2024"

@@ -15,6 +15,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     defer-datasource-initialization: true
+  cloud:
+    compatibility-verifier:
+      enabled: false  # Helps with Spring Cloud compatibility
 
   sql:
     init:
@@ -25,12 +28,16 @@ server:
 
 eureka:
   client:
-    enabled: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:
     com.carmanagement.auth: DEBUG
     org.hibernate.SQL: DEBUG
+    com.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG
+    org.springframework.cloud.client.discovery: DEBUG
 
 jwt:
   secret: "mySuperSecretKeyForJWTTokenGenerationInCarManagementSystem2024"

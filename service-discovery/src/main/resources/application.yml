@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: service-discovery
+
+# Eureka Server Configuration
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
