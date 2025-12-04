@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "auth-service", url = "http://localhost:8081/api/auth")
+@FeignClient(name = "auth-service")
 @CircuitBreaker(name = "authService")  // Add circuit breaker
 @Retry(name = "authService")           // Add retry mechanism
 public interface AuthServiceClient {

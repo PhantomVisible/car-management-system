@@ -7,11 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
-@FeignClient(
-        name = "car-service",
-        url = "http://localhost:8082",
-        fallback = CarServiceFallback.class
-)
+@FeignClient(name = "car-service")
 @CircuitBreaker(name = "carService")  // Add circuit breaker
 @Retry(name = "carService")           // Add retry mechanism
 public interface CarServiceClient {
