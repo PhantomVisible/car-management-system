@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @Retry(name = "authService")           // Add retry mechanism
 public interface AuthServiceClient {
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/api/auth/users/{userId}")
     UserResponsePath getUserById(
             @PathVariable("userId") Long userId,
             @RequestHeader("Authorization") String token
